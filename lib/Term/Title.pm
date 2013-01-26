@@ -1,20 +1,12 @@
-# lib/Term/Title.pm
-# Copyright (c) 2008 by David Golden. All rights reserved.
-# Licensed under Apache License, Version 2.0 (the "License").
-# You may not use this file except in compliance with the License.
-# A copy of the License was distributed with this file or you may obtain a 
-# copy of the License from http://www.apache.org/licenses/LICENSE-2.0
-
 package Term::Title;
 use strict;
 use warnings;
-
-our $VERSION = '0.03';
-$VERSION = eval $VERSION; ## no critic
+# ABSTRACT: Portable API to set the terminal titlebar
+our $VERSION = '0.001'; # VERSION
 
 use Exporter;
 our @ISA = 'Exporter';
-our @EXPORT_OK = qw/set_titlebar/;
+our @EXPORT_OK = qw/set_titlebar set_tab_title/;
 
 # encodings by terminal type -- except for mswin32 get matched as regex
 # against $ENV{TERM}
@@ -36,18 +28,28 @@ my %terminal = (
     },
 );
 
-sub set_titlebar {
-    my ($title, @optional) = @_;
+my %terminal_tabs = (
+    'iterm2' => {
+        is_supported  => sub {
+            $ENV{TERM_PROGRAM} and $ENV{TERM_PROGRAM} eq 'iTerm.app'
+        },
+        pre => "\033]1;",
+        post => "\007",
+    },
+);
+
+sub _set {
+    my ($type_cb, $types, $title, @optional) = @_;
     $title = q{ } unless defined $title;
-    my $type = _is_supported();
+    my $type = $type_cb->();
 
     if ( $type ) {
-        if ( ref $terminal{$type} eq 'CODE' ) {
-            $terminal{$type}->( $title, @optional );
+        if ( ref $types->{$type} eq 'CODE' ) {
+            $types->{$type}->( $title, @optional );
         }
-        elsif (ref $terminal{$type} eq 'HASH' ) {
-            print STDOUT $terminal{$type}{pre},  $title, 
-                         $terminal{$type}{post}, @optional, "\n";
+        elsif (ref $types->{$type} eq 'HASH' ) {
+            print STDOUT $types->{$type}{pre},  $title,
+                         $types->{$type}{post}, @optional, "\n";
         }
     }
     elsif ( @optional ) {
@@ -56,8 +58,12 @@ sub set_titlebar {
     return;
 }
 
+sub set_titlebar { _set(\&_is_supported, \%terminal, @_) }
+
+sub set_tab_title { _set(\&_is_supported_tabs, \%terminal_tabs, @_) }
+
 sub _is_supported {
-    if ( $^O eq 'MSWin32' ) {
+    if ( $^O =~ m/^MSWin32^/i ) {
         return 'mswin32' if eval { require Win32::Console };
     }
     else {
@@ -69,21 +75,29 @@ sub _is_supported {
     return;
 }
 
+sub _is_supported_tabs {
+    for my $k (keys %terminal_tabs) {
+        return $k if $terminal_tabs{$k}{is_supported}->();
+    }
+
+    return;
+}
+
 1;
 
 __END__
 
-=begin wikidoc
+=pod
 
-= NAME
+=head1 NAME
 
 Term::Title - Portable API to set the terminal titlebar
 
-= VERSION
+=head1 VERSION
 
-This documentation describes version %%VERSION%%.
+version 0.001
 
-= SYNOPSIS
+=head1 SYNOPSIS
 
     use Term::Title 'set_titlebar';
 
@@ -91,76 +105,121 @@ This documentation describes version %%VERSION%%.
 
     set_titlebar("Title", "And also print this to the terminal");
 
-= DESCRIPTION
+    set_tab_title("This goes into the tab title");
 
-Term::Title provides an abstraction for setting the titlebar (or title tab)
+    set_tab_title("Tab Title", "And also print this to the terminal");
+
+=head1 DESCRIPTION
+
+Term::Title provides an abstraction for setting the titlebar or the tab title
 across different types of terminals.  For *nix terminals, it prints the
-appropriate escape sequences to set the terminal title based on the value of
-{$ENV{TERM}}.  On Windows, it uses [Win32::Console] to set the title directly.  
+appropriate escape sequences to set the terminal or tab title based on the
+value of C<$ENV{TERM}>.  On Windows, it uses L<Win32::Console> to set the
+title directly.
 
-Currently, supported terminals include:
+Currently, changing the titlebar is supported in these terminals:
 
-* xterm
-* rxvt
-* screen
-* Win32 console
+=over 4
 
-= USAGE
+=item *
 
-== {set_titlebar()}
+xterm
+
+=item *
+
+rxvt
+
+=item *
+
+screen
+
+=item *
+
+iTerm2.app
+
+=item *
+
+Win32 console
+
+=back
+
+The terminals that support changing the tab title include:
+
+=over 4
+
+=item *
+
+iTerm2.app
+
+=back
+
+=head1 USAGE
+
+=head2 set_titlebar
 
     set_titlebar( $title, @optional_text );
 
-Sets the titlebar to {$title} or clears the titlebar if {$title} is 
+Sets the titlebar to C<$title> or clears the titlebar if C<$title> is 
 undefined.   
 
 On terminals that require printing escape codes to the terminal, a newline
-character is also printed to the terminal.  If { @optional_text } is given, it
+character is also printed to the terminal.  If C< @optional_text > is given, it
 will be printed to the terminal prior to the newline.  Thus, to keep terminal
-output cleaner, use {set_titlebar()} in place of a {print()} statement to
+output cleaner, use C<set_titlebar()> in place of a C<print()> statement to
 set the titlebar and print at the same time.
 
 If the terminal is not supported, set_titlebar silently continues, printing
-{ @optional_text } if any.
+C<@optional_text> if any.
 
-= BUGS
+=head2 set_tab_title
 
-Please report any bugs or feature using the CPAN Request Tracker.  
-Bugs can be submitted through the web interface at 
-[http://rt.cpan.org/Dist/Display.html?Queue=Term-Title]
+    set_tab_title( $title, @optional_text );
 
-When submitting a bug or request, please include a test-file or a patch to an
-existing test-file that illustrates the bug or desired feature.
+Has the exact same semantics as the L</set_titlebar> but changes the tab title.
 
-= SEE ALSO
+=head1 SEE ALSO
 
-* [Win32::Console]
-* [http://www.ibiblio.org/pub/Linux/docs/HOWTO/Xterm-Title]
+=over 4
 
-= AUTHOR
+=item *
 
-David A. Golden (DAGOLDEN)
+L<Win32::Console>
 
-= COPYRIGHT AND LICENSE
+=item *
 
-Copyright (c) 2008 by David A. Golden. All rights reserved.
+L<http://www.ibiblio.org/pub/Linux/docs/HOWTO/Xterm-Title>
 
-Licensed under Apache License, Version 2.0 (the "License").
-You may not use this file except in compliance with the License.
-A copy of the License was distributed with this file or you may obtain a 
-copy of the License from http://www.apache.org/licenses/LICENSE-2.0
+=back
 
-Files produced as output though the use of this software, shall not be
-considered Derivative Works, but shall be considered the original work of the
-Licensor.
+=for :stopwords cpan testmatrix url annocpan anno bugtracker rt cpants kwalitee diff irc mailto metadata placeholders metacpan
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+=head1 SUPPORT
 
-=end wikidoc
+=head2 Bugs / Feature Requests
+
+Please report any bugs or feature requests through the issue tracker
+at L<https://rt.cpan.org/Public/Dist/Display.html?Name=Term-Title>.
+You will be notified automatically of any progress on your issue.
+
+=head2 Source Code
+
+This is open source software.  The code repository is available for
+public review and contribution under the terms of the license.
+
+L<https://github.com/dagolden/term-title>
+
+  git clone git://github.com/dagolden/term-title.git
+
+=head1 AUTHOR
+
+David Golden <dagolden@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by David Golden.
+
+This is free software, licensed under:
+
+  The Apache License, Version 2.0, January 2004
 
 =cut
-

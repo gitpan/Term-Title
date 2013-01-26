@@ -1,27 +1,40 @@
 ---
-name: Term-Title
-version: 0.03
+abstract: 'Portable API to set the terminal titlebar'
 author:
   - 'David Golden <dagolden@cpan.org>'
-abstract: Portable API to set the terminal titlebar
-license: apache
-resources:
-  license: http://apache.org/licenses/LICENSE-2.0
-requires:
-  Exporter: 0
-  perl: 5.004
 build_requires:
-  Test::More: 0.62
+  File::Find: 0
+  File::Temp: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.30
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.300029, CPAN::Meta::Converter version 2.120921'
+license: apache
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Term-Title
+no_index:
+  directory:
+    - t
+    - xt
+    - examples
+    - corpus
+  package:
+    - DB
 provides:
   Term::Title:
     file: lib/Term/Title.pm
-    version: 0.03
-generated_by: Module::Build version 0.280801
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
-no_index:
-  directory:
-    - examples
-    - inc
-    - t
+    version: 0.001
+requires:
+  Exporter: 0
+  Win32::Console: 0
+  perl: 5.006
+  strict: 0
+  warnings: 0
+resources:
+  bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Term-Title
+  homepage: https://metacpan.org/release/Term-Title
+  repository: git://github.com/dagolden/term-title.git
+version: 0.001
