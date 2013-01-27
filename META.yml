@@ -26,7 +26,7 @@ no_index:
 provides:
   Term::Title:
     file: lib/Term/Title.pm
-    version: 0.05
+    version: 0.06
 requires:
   Exporter: 0
   perl: 5.006
@@ -36,4 +36,4 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Term-Title
   homepage: https://metacpan.org/release/Term-Title
   repository: git://github.com/dagolden/term-title.git
-version: 0.05
+version: 0.06
