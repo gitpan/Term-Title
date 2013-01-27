@@ -25,11 +25,10 @@ my %WriteMakefileArgs = (
   "NAME" => "Term::Title",
   "PREREQ_PM" => {
     "Exporter" => 0,
-    "Win32::Console" => 0,
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.04",
+  "VERSION" => "0.05",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -51,6 +50,10 @@ unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
 
 delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
   unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+
+if ( $^O eq 'MSWin32' ) {
+  $WriteMakefileArgs{PREREQ_PM}{'Win32::Console'} = '0';
+}
 
 WriteMakefile(%WriteMakefileArgs);
 

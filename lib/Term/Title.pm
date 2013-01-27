@@ -2,7 +2,7 @@ package Term::Title;
 use strict;
 use warnings;
 # ABSTRACT: Portable API to set the terminal titlebar
-our $VERSION = '0.04'; # VERSION
+our $VERSION = '0.05'; # VERSION
 
 use Exporter;
 our @ISA = 'Exporter';
@@ -95,7 +95,7 @@ Term::Title - Portable API to set the terminal titlebar
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 

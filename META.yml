@@ -8,7 +8,7 @@ build_requires:
   Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
-dynamic_config: 0
+dynamic_config: 1
 generated_by: 'Dist::Zilla version 4.300029, CPAN::Meta::Converter version 2.120921'
 license: apache
 meta-spec:
@@ -26,10 +26,9 @@ no_index:
 provides:
   Term::Title:
     file: lib/Term/Title.pm
-    version: 0.04
+    version: 0.05
 requires:
   Exporter: 0
-  Win32::Console: 0
   perl: 5.006
   strict: 0
   warnings: 0
@@ -37,4 +36,4 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Term-Title
   homepage: https://metacpan.org/release/Term-Title
   repository: git://github.com/dagolden/term-title.git
-version: 0.04
+version: 0.05
