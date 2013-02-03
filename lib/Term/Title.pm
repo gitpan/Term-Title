@@ -2,7 +2,7 @@ package Term::Title;
 use strict;
 use warnings;
 # ABSTRACT: Portable API to set the terminal titlebar
-our $VERSION = '0.06'; # VERSION
+our $VERSION = '0.07'; # VERSION
 
 use Exporter;
 our @ISA = 'Exporter';
@@ -63,7 +63,7 @@ sub set_titlebar { _set(\&_is_supported, \%terminal, @_) }
 sub set_tab_title { _set(\&_is_supported_tabs, \%terminal_tabs, @_) }
 
 sub _is_supported {
-    if ( $^O =~ m/^MSWin32^/i ) {
+    if ( lc($^O) eq 'mswin32' ) {
         return 'mswin32' if eval { require Win32::Console };
     }
     else {
@@ -95,7 +95,7 @@ Term::Title - Portable API to set the terminal titlebar
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SYNOPSIS
 
