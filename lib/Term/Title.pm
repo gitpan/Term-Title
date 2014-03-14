@@ -2,10 +2,10 @@ package Term::Title;
 use strict;
 use warnings;
 # ABSTRACT: Portable API to set the terminal titlebar
-our $VERSION = '0.07'; # VERSION
+our $VERSION = '0.08'; # VERSION
 
 use Exporter;
-our @ISA = 'Exporter';
+our @ISA       = 'Exporter';
 our @EXPORT_OK = qw/set_titlebar set_tab_title/;
 
 # encodings by terminal type -- except for mswin32 get matched as regex
@@ -13,15 +13,15 @@ our @EXPORT_OK = qw/set_titlebar set_tab_title/;
 # code ref gets title and text to print
 my %terminal = (
     'xterm|rxvt' => {
-        pre => "\033]2;",
+        pre  => "\033]2;",
         post => "\007",
     },
     'screen' => {
-        pre => "\ek",
+        pre  => "\ek",
         post => "\e\\",
     },
     'mswin32' => sub {
-        my ($title, @optional) = @_;
+        my ( $title, @optional ) = @_;
         my $c = Win32::Console->new();
         $c->Title($title);
         print STDOUT @optional, "\n";
@@ -30,37 +30,36 @@ my %terminal = (
 
 my %terminal_tabs = (
     'iterm2' => {
-        is_supported  => sub {
-            $ENV{TERM_PROGRAM} and $ENV{TERM_PROGRAM} eq 'iTerm.app'
+        is_supported => sub {
+            $ENV{TERM_PROGRAM} and $ENV{TERM_PROGRAM} eq 'iTerm.app';
         },
-        pre => "\033]1;",
+        pre  => "\033]1;",
         post => "\007",
     },
 );
 
 sub _set {
-    my ($type_cb, $types, $title, @optional) = @_;
+    my ( $type_cb, $types, $title, @optional ) = @_;
     $title = q{ } unless defined $title;
     my $type = $type_cb->();
 
-    if ( $type ) {
+    if ($type) {
         if ( ref $types->{$type} eq 'CODE' ) {
             $types->{$type}->( $title, @optional );
         }
-        elsif (ref $types->{$type} eq 'HASH' ) {
-            print STDOUT $types->{$type}{pre},  $title,
-                         $types->{$type}{post}, @optional, "\n";
+        elsif ( ref $types->{$type} eq 'HASH' ) {
+            print STDOUT $types->{$type}{pre}, $title, $types->{$type}{post}, @optional, "\n";
         }
     }
-    elsif ( @optional ) {
+    elsif (@optional) {
         print STDOUT @optional, "\n";
     }
     return;
 }
 
-sub set_titlebar { _set(\&_is_supported, \%terminal, @_) }
+sub set_titlebar { _set( \&_is_supported, \%terminal, @_ ) }
 
-sub set_tab_title { _set(\&_is_supported_tabs, \%terminal_tabs, @_) }
+sub set_tab_title { _set( \&_is_supported_tabs, \%terminal_tabs, @_ ) }
 
 sub _is_supported {
     if ( lc($^O) eq 'mswin32' ) {
@@ -76,7 +75,7 @@ sub _is_supported {
 }
 
 sub _is_supported_tabs {
-    for my $k (keys %terminal_tabs) {
+    for my $k ( keys %terminal_tabs ) {
         return $k if $terminal_tabs{$k}{is_supported}->();
     }
 
@@ -89,13 +88,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Term::Title - Portable API to set the terminal titlebar
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -198,7 +199,7 @@ L<http://www.ibiblio.org/pub/Linux/docs/HOWTO/Xterm-Title>
 =head2 Bugs / Feature Requests
 
 Please report any bugs or feature requests through the issue tracker
-at L<https://rt.cpan.org/Public/Dist/Display.html?Name=Term-Title>.
+at L<https://github.com/dagolden/Term-Title/issues>.
 You will be notified automatically of any progress on your issue.
 
 =head2 Source Code
@@ -206,13 +207,27 @@ You will be notified automatically of any progress on your issue.
 This is open source software.  The code repository is available for
 public review and contribution under the terms of the license.
 
-L<https://github.com/dagolden/term-title>
+L<https://github.com/dagolden/Term-Title>
 
-  git clone git://github.com/dagolden/term-title.git
+  git clone https://github.com/dagolden/Term-Title.git
 
 =head1 AUTHOR
 
 David Golden <dagolden@cpan.org>
+
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item *
+
+Alexandr Ciornii <alexchorny@gmail.com>
+
+=item *
+
+Pedro Melo <melo@simplicidade.org>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 

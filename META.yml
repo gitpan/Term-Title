@@ -3,17 +3,19 @@ abstract: 'Portable API to set the terminal titlebar'
 author:
   - 'David Golden <dagolden@cpan.org>'
 build_requires:
-  File::Find: 0
-  File::Temp: 0
-  Test::More: 0
+  ExtUtils::MakeMaker: '0'
+  File::Spec::Functions: '0'
+  List::Util: '0'
+  Test::More: '0'
+  version: '0'
 configure_requires:
-  ExtUtils::MakeMaker: 6.30
+  ExtUtils::MakeMaker: '6.17'
 dynamic_config: 1
-generated_by: 'Dist::Zilla version 4.300029, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Dist::Zilla version 5.013, CPAN::Meta::Converter version 2.140640'
 license: apache
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: Term-Title
 no_index:
   directory:
@@ -26,14 +28,18 @@ no_index:
 provides:
   Term::Title:
     file: lib/Term/Title.pm
-    version: 0.07
+    version: '0.08'
 requires:
-  Exporter: 0
-  perl: 5.006
-  strict: 0
-  warnings: 0
+  Exporter: '0'
+  perl: '5.006'
+  strict: '0'
+  warnings: '0'
 resources:
-  bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Term-Title
-  homepage: https://metacpan.org/release/Term-Title
-  repository: git://github.com/dagolden/term-title.git
-version: 0.07
+  bugtracker: https://github.com/dagolden/Term-Title/issues
+  homepage: https://github.com/dagolden/Term-Title
+  repository: https://github.com/dagolden/Term-Title.git
+version: '0.08'
+x_authority: cpan:DAGOLDEN
+x_contributors:
+  - 'Alexandr Ciornii <alexchorny@gmail.com>'
+  - 'Pedro Melo <melo@simplicidade.org>'
